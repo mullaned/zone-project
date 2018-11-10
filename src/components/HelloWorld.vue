@@ -1,140 +1,147 @@
 <template>
-  <div id="now-playing-list">
-    <div v-for="genre in filmGenres">
-      <p>{{genre}}</p>
-    </div>
-    <div v-for="movie in moviesData">
-      <h3>{{movie.title}}</h3>
-      <img class="poster-image" :src="movie.poster_path" alt="">
-      
-      <h4 v-for="genre in movie.genre_ids">{{genre}}</h4>
-    </div>
-  </div>
+  <v-container>
+    <v-layout
+      text-xs-center
+      wrap
+    >
+      <v-flex xs12>
+        <v-img
+          :src="require('../assets/logo.svg')"
+          class="my-3"
+          contain
+          height="200"
+        ></v-img>
+      </v-flex>
+
+      <v-flex mb-4>
+        <h1 class="display-2 font-weight-bold mb-3">
+          Welcome to Vuetify
+        </h1>
+        <p class="subheading font-weight-regular">
+          For help and collaboration with other Vuetify developers,
+          <br>please join our online
+          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
+        </p>
+      </v-flex>
+
+      <v-flex
+        mb-5
+        xs12
+      >
+        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
+
+        <v-layout justify-center>
+          <a
+            v-for="(next, i) in whatsNext"
+            :key="i"
+            :href="next.href"
+            class="subheading mx-3"
+            target="_blank"
+          >
+            {{ next.text }}
+          </a>
+        </v-layout>
+      </v-flex>
+
+      <v-flex
+        xs12
+        mb-5
+      >
+        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
+
+        <v-layout justify-center>
+          <a
+            v-for="(link, i) in importantLinks"
+            :key="i"
+            :href="link.href"
+            class="subheading mx-3"
+            target="_blank"
+          >
+            {{ link.text }}
+          </a>
+        </v-layout>
+      </v-flex>
+
+      <v-flex
+        xs12
+        mb-5
+      >
+        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
+
+        <v-layout justify-center>
+          <a
+            v-for="(eco, i) in ecosystem"
+            :key="i"
+            :href="eco.href"
+            class="subheading mx-3"
+            target="_blank"
+          >
+            {{ eco.text }}
+          </a>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
-
 <script>
-import axios from "axios";
-
-export default {
-  name: "search",
-  props: {
-    msg: String
-  },
-  data() {
-    return {
-      moviesData: [],
-      filmGenres: []
-    };
-  },
-  created() {
-    axios
-      .get(
-        "https://api.themoviedb.org/3/movie/now_playing?api_key=4f7f99180a8a7100e411b2d21d0a90e3&language=en-US&page=1"
-      )
-      .then(res => {
-        const moviesData = res.data.results;
-        const filmGenres = [];
-        for (let i = 0; i < moviesData.length; i++) {
-          //concat the image path prefix to the poster paths
-          moviesData[i].poster_path =
-            "https://image.tmdb.org/t/p/w500" + moviesData[i].poster_path;
-
-          //translate the genre id to text and add the listed genres to the filmGenres array
-          for (let j = 0; j < moviesData[i].genre_ids.length; j++) {
-            if (moviesData[i].genre_ids[j] === 28) {
-              moviesData[i].genre_ids[j] = "Action";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 12) {
-              moviesData[i].genre_ids[j] = "Adventure";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 16) {
-              moviesData[i].genre_ids[j] = "Animation";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 35) {
-              moviesData[i].genre_ids[j] = "Comedy";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 80) {
-              moviesData[i].genre_ids[j] = "Crime";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 99) {
-              moviesData[i].genre_ids[j] = "Documentary";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 18) {
-              moviesData[i].genre_ids[j] = "Drama";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 10751) {
-              moviesData[i].genre_ids[j] = "Family";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 14) {
-              moviesData[i].genre_ids[j] = "Fantasy";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 36) {
-              moviesData[i].genre_ids[j] = "History";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 27) {
-              moviesData[i].genre_ids[j] = "Horror";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 10402) {
-              moviesData[i].genre_ids[j] = "Music";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 9648) {
-              moviesData[i].genre_ids[j] = "Mystery";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 10749) {
-              moviesData[i].genre_ids[j] = "Romance";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 878) {
-              moviesData[i].genre_ids[j] = "Science Fiction";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 10770) {
-              moviesData[i].genre_ids[j] = "TV Movie";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 53) {
-              moviesData[i].genre_ids[j] = "Thriller";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 10752) {
-              moviesData[i].genre_ids[j] = "War";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            } else if (moviesData[i].genre_ids[j] === 37) {
-              moviesData[i].genre_ids[j] = "Western";
-              filmGenres.push(moviesData[i].genre_ids[j]);
-            }
-          }
+  export default {
+    data: () => ({
+      ecosystem: [
+        {
+          text: 'vuetify-loader',
+          href: 'https://github.com/vuetifyjs/vuetify-loader'
+        },
+        {
+          text: 'github',
+          href: 'https://github.com/vuetifyjs/vuetify'
+        },
+        {
+          text: 'awesome-vuetify',
+          href: 'https://github.com/vuetifyjs/awesome-vuetify'
         }
-        //remove duplicates from the array
-        let uniqueFilmGenres = [...new Set(filmGenres)];
+      ],
+      importantLinks: [
+        {
+          text: 'Documentation',
+          href: 'https://vuetifyjs.com'
+        },
+        {
+          text: 'Chat',
+          href: 'https://community.vuetifyjs.com'
+        },
+        {
+          text: 'Made with Vuetify',
+          href: 'https://madewithvuetifyjs.com'
+        },
+        {
+          text: 'Twitter',
+          href: 'https://twitter.com/vuetifyjs'
+        },
+        {
+          text: 'Articles',
+          href: 'https://medium.com/vuetify'
+        }
+      ],
+      whatsNext: [
+        {
+          text: 'Explore components',
+          href: 'https://vuetifyjs.com/components/api-explorer'
+        },
+        {
+          text: 'Select a layout',
+          href: 'https://vuetifyjs.com/layout/pre-defined'
+        },
+        {
+          text: 'Frequently Asked Questions',
+          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions'
+        }
 
-        this.filmGenres = uniqueFilmGenres;
-        this.moviesData = moviesData;
-        console.log(moviesData);
-      })
-      .catch(error => console.log(error));
-  },
-
-  methods: {
-    
+      ]
+    })
   }
-};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style>
 
-.poster-image {
-}
 </style>
