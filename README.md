@@ -2,12 +2,12 @@
 
 Built using the Vue framework and Vuetify UI library.  Axios is used to request the now playing listings from the TMDb API.  The required info is the movie title, genres and poster image for each movie.  On creation axios makes the request, data object is received in order of popularity, the poster image path is concated with the url prefix and the genre ids are converted to their named values.  The required info is passed to the component data object.
 
-##Filters
+## Filters
 
-###The Slider filter:
+### The Slider filter:
 The slider filter has a range of 0 - 10 in 0.5 step increments.  Any movies with a `vote_average` property of less than the min rating will be removed from the list using a v-if statement.
 
-###The Genre filter:
+### The Genre filter:
 The data returned from the get request provides the genres in number format.  Using a map function the numbers are converted to their names and placed in an array.  Duplicates are removed from this array and a second array of true show values is built matching the length of the unique genres array.
 
 The unique genres array and the true values array are combined into a object and data is set on creation.
@@ -20,14 +20,14 @@ On change of the tickbox the genre is set to true/false in  `filmGenres[1]` and 
 
 
 
-##Styling
+## Styling
 Basic styling for the page, Vuetify fonts, checkboxes, slider and cards for the movies info.
 The page is responsive using flexbox.
 
 
 
 
-###Try the app:
+### Try the app:
 [aws-url] : http://movie-listings.s3-website-us-east-1.amazonaws.com/;
 
 ## Project setup
