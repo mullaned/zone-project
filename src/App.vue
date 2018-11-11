@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-content>
+  <v-app dark>
+    <v-content >
       <Films/>
     </v-content>
   </v-app>

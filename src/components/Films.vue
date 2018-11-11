@@ -2,17 +2,15 @@
     <v-card>
         <!-- Page Title -->
         <v-card-text> 
-            <h1 class="text-xs-center">Movies Listings</h1>    
+            <h1 class="text-xs-center display-3 font-weight-bold">Movie Listings</h1>    
         </v-card-text>
-
-        
-       
+     
        <!-- Filter Options -->
         <v-card flat color="transparent">
             <!-- Rating slider -->
             <v-layout justify-center>
-                <v-flex  shrink style="width: 600px">
-                    <v-card-text class="pt-6">
+                <v-flex  shrink class="rating-slider">
+                    <v-card-text class="pt-8">
                         <v-slider
                         v-model="sliderRating"
                         label="Min Rating"
@@ -31,7 +29,7 @@
                 <v-flex xs8 >       
                         <v-layout row wrap >    
                             <v-flex xs6 md3 v-for="(genre, index) in filmGenres[0]" :key="index">
-                                <v-checkbox :label="genre" v-model="filmGenres[1][index]"></v-checkbox>
+                                <v-checkbox :label="genre" v-model="filmGenres[1][index]" @change="removeGenre(index)"></v-checkbox>
                             </v-flex>                      
                         </v-layout>
                         <!-- Testing -->
@@ -45,17 +43,21 @@
 
         <!-- Movie Details Section -->
         <v-container >
-            <v-layout  justify-center row wrap fill-height > 
+            <v-layout  justify-center row wrap fill-height> 
                 <v-flex d-flex xs12 sm6 md3 v-for="(movie, index) in moviesData" :key="index" >
                     <v-card v-if="movie.vote_average >= sliderRating" >
-                        <v-card-text > 
+                        <!-- Testing -->
+                        <!-- <p>{{filmGenres[0]}}</p>
+                        <p>{{filmGenres[1]}}</p>
+                        <p>{{movie.genre_ids}}</p> -->
+                        <v-card-text class="movie-card" v-if="movie.genre_ids.length > 0"> 
                             <!-- Movie Title -->
-                            <h2 class="text-xs-center" style="margin: 20px 0 20px 0; height: 50px;">{{movie.title}}</h2>      
+                            <h1 class="text-xs-center movie-title headline ">{{movie.title}}</h1>      
                             <!-- Poster Image -->
-                            <img :src="movie.poster_path" alt="" style="max-width: 100%">
+                            <img :src="movie.poster_path" alt="" class="poster-image">
                             <!-- Genres -->
-                            <h4 class="text-xs-center">Genres:</h4>
-                            <h5 class="text-xs-center" v-for="(genre, index) in movie.genre_ids" :key="index">{{genre}}</h5>
+                            <!-- <h4 class="text-xs-center title">Genres:</h4> -->
+                            <h4 class="text-xs-center subheading font-italic" v-for="(genre, index) in movie.genre_ids" :key="index">{{genre}} </h4>
                         </v-card-text>
                     </v-card>    
                 </v-flex>
@@ -64,17 +66,36 @@
     </v-card>
 </template>
 
-
 <script>
-// Import Axios
-import axios from "axios";
+import axios from 'axios';
 
 export default {
   data() {
     return {
       moviesData: [],
       filmGenres: {},
-      sliderRating: 3
+      sliderRating: 3,
+      deletedGenres: {
+          "Action": [],
+          "Adventure": [],
+          "Animation": [],
+          "Comedy": [],
+          "Crime": [],
+          "Documentary": [],
+          "Drama": [],
+          "Family": [],
+          "Fantasy": [],
+          "History": [],
+          "Horror": [],
+          "Music": [],
+          "Mystery": [],
+          "Romance": [],
+          "Science Fiction": [],
+          "TV Movie": [],
+          "Thriller": [],
+          "War": [],
+          "Western": [],
+      }
     };
   },
   created() {
@@ -127,21 +148,69 @@ export default {
             showArray[i] = true;
         }
 
-        
+        //convert genre array and showArray to object 
         let genresObj = Object.assign({}, [uniqueFilmGenres, showArray]);
-        console.log(genresObj);
+        
         
         //assign data 
         this.filmGenres = genresObj;
         this.moviesData = moviesData;
-        console.log(moviesData);
+        // console.log(moviesData);
       })
       .catch(error => console.log(error));
+  },
+  methods: {
+    removeGenre(index){
+        if(!this.filmGenres[1][index]) {  
+            for(let i=0; i<this.moviesData.length; i++){
+                for(let j=0; j<this.moviesData[i].genre_ids.length; j++){
+                    if(this.moviesData[i].genre_ids[j] === this.filmGenres[0][index]) {
+                        //Store the i and j position in the deletedGenres object
+                        let name = this.filmGenres[0][index]; 
+                        this.deletedGenres[name].push([i,j]);
+                        
+                        // console.log(this.deletedGenres)
+                        
+
+                        let el = this.moviesData[i].genre_ids.indexOf(this.filmGenres[0][index])
+                        if(el > -1){
+                            this.moviesData[i].genre_ids.splice(el, 1);
+                        }
+                    }
+                }
+            }
+        }else{
+            let name = this.filmGenres[0][index];
+            // console.log(name);
+                for(let i=0; i< this.deletedGenres[name].length; i++){
+                    let iPos = this.deletedGenres[name][i][0];
+                    let jPos = this.deletedGenres[name][i][1];
+                    //Add the genres back to their positions in genre_ids 
+                    this.moviesData[iPos].genre_ids.splice(jPos, 0 , name);                               
+                }
+                //Remove the restored positions from the deletedGeneres Object
+                this.deletedGenres[name] = [];         
+            
+            
+            // console.log(this.deletedGenres)
+        }         
+    },
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
+<style>
+    .movie-title{
+        height: 70px;
+    }
+    .poster-image{
+        max-width: 100%;
+    }
+    .movie-card{
+        margin-bottom: 50px;
+    }
+    .rating-slider{
+        width: 60%;
+    }
 </style>
+
