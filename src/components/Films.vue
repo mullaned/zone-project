@@ -50,7 +50,7 @@
                         <!-- <p>{{filmGenres[0]}}</p>
                         <p>{{filmGenres[1]}}</p>
                         <p>{{movie.genre_ids}}</p> -->
-                        <v-card-text class="movie-card" v-if="movie.genre_ids.length > 0"> 
+                        <v-card-text class="movie-card" v-if="movie.genre_ids.length > 0" transition="fade-transition"> 
                             <!-- Movie Title -->
                             <h1 class="text-xs-center movie-title headline ">{{movie.title}}</h1>      
                             <!-- Poster Image -->
@@ -67,38 +67,42 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
+      //moviesData and filmFGenres populated on creation
       moviesData: [],
       filmGenres: {},
+      //initial slider rating
       sliderRating: 3,
+      //storage for deletedGenres
       deletedGenres: {
-          "Action": [],
-          "Adventure": [],
-          "Animation": [],
-          "Comedy": [],
-          "Crime": [],
-          "Documentary": [],
-          "Drama": [],
-          "Family": [],
-          "Fantasy": [],
-          "History": [],
-          "Horror": [],
-          "Music": [],
-          "Mystery": [],
-          "Romance": [],
-          "Science Fiction": [],
-          "TV Movie": [],
-          "Thriller": [],
-          "War": [],
-          "Western": [],
+        "Action": [],
+        "Adventure": [],
+        "Animation": [],
+        "Comedy": [],
+        "Crime": [],
+        "Documentary": [],
+        "Drama": [],
+        "Family": [],
+        "Fantasy": [],
+        "History": [],
+        "Horror": [],
+        "Music": [],
+        "Mystery": [],
+        "Romance": [],
+        "Science Fiction": [],
+        "TV Movie": [],
+        "Thriller": [],
+        "War": [],
+        "Western": []
       }
     };
   },
   created() {
+    //map of genre ids to names
     let idMap = new Map();
     idMap.set(28, "Action");
     idMap.set(12, "Adventure");
@@ -133,7 +137,7 @@ export default {
           moviesData[i].poster_path =
             "https://image.tmdb.org/t/p/w500" + moviesData[i].poster_path;
 
-        //   convert the genre ids to names using the map
+          //   convert the genre ids to names using the map
           let movieGenres = moviesData[i].genre_ids;
           moviesData[i].genre_ids = movieGenres.map(function(value) {
             value = idMap.get(value);
@@ -144,15 +148,14 @@ export default {
         //remove duplicates from the array
         let uniqueFilmGenres = [...new Set(filmGenres)];
         let showArray = [];
-        for(let i=0; i<uniqueFilmGenres.length; i++){
-            showArray[i] = true;
+        for (let i = 0; i < uniqueFilmGenres.length; i++) {
+          showArray[i] = true;
         }
 
-        //convert genre array and showArray to object 
+        //convert genre array and showArray to object
         let genresObj = Object.assign({}, [uniqueFilmGenres, showArray]);
-        
-        
-        //assign data 
+
+        //assign data
         this.filmGenres = genresObj;
         this.moviesData = moviesData;
         // console.log(moviesData);
@@ -160,57 +163,57 @@ export default {
       .catch(error => console.log(error));
   },
   methods: {
-    removeGenre(index){
-        if(!this.filmGenres[1][index]) {  
-            for(let i=0; i<this.moviesData.length; i++){
-                for(let j=0; j<this.moviesData[i].genre_ids.length; j++){
-                    if(this.moviesData[i].genre_ids[j] === this.filmGenres[0][index]) {
-                        //Store the i and j position in the deletedGenres object
-                        let name = this.filmGenres[0][index]; 
-                        this.deletedGenres[name].push([i,j]);
-                        
-                        // console.log(this.deletedGenres)
-                        
-
-                        let el = this.moviesData[i].genre_ids.indexOf(this.filmGenres[0][index])
-                        if(el > -1){
-                            this.moviesData[i].genre_ids.splice(el, 1);
-                        }
-                    }
-                }
+    removeGenre(index) {
+      //if a genre has a show value of false, find each instance of it in genres_ids and remove it, store the positions of the removed genres  
+      if (!this.filmGenres[1][index]) {
+        for (let i = 0; i < this.moviesData.length; i++) {
+          for (let j = 0; j < this.moviesData[i].genre_ids.length; j++) {
+            if (this.moviesData[i].genre_ids[j] === this.filmGenres[0][index]) {
+              //Store the i and j position in the deletedGenres object
+              let name = this.filmGenres[0][index];
+              this.deletedGenres[name].push([i, j]);
+              // console.log(this.deletedGenres)
+              //Remove the genre from genre_ids
+              let el = this.moviesData[i].genre_ids.indexOf(
+                this.filmGenres[0][index]
+              );
+              if (el > -1) {
+                this.moviesData[i].genre_ids.splice(el, 1);
+              }
             }
-        }else{
-            let name = this.filmGenres[0][index];
-            // console.log(name);
-                for(let i=0; i< this.deletedGenres[name].length; i++){
-                    let iPos = this.deletedGenres[name][i][0];
-                    let jPos = this.deletedGenres[name][i][1];
-                    //Add the genres back to their positions in genre_ids 
-                    this.moviesData[iPos].genre_ids.splice(jPos, 0 , name);                               
-                }
-                //Remove the restored positions from the deletedGeneres Object
-                this.deletedGenres[name] = [];         
-            
-            
-            // console.log(this.deletedGenres)
-        }         
-    },
+          }
+        }
+      } else {
+        //if the genre has a show position of true, restore it to its position in genre_ids, positions stored in deleteGenres  
+        let name = this.filmGenres[0][index];
+        // console.log(name);
+        for (let i = 0; i < this.deletedGenres[name].length; i++) {
+          let iPos = this.deletedGenres[name][i][0];
+          let jPos = this.deletedGenres[name][i][1];
+          //Add the genres back to their positions in genre_ids
+          this.moviesData[iPos].genre_ids.splice(jPos, 0, name);
+        }
+        //Remove the restored positions from the deletedGeneres Object
+        this.deletedGenres[name] = [];
+        // console.log(this.deletedGenres)
+      }
+    }
   }
 };
 </script>
 
 <style>
-    .movie-title{
-        height: 70px;
-    }
-    .poster-image{
-        max-width: 100%;
-    }
-    .movie-card{
-        margin-bottom: 50px;
-    }
-    .rating-slider{
-        width: 60%;
-    }
+.movie-title {
+  height: 70px;
+}
+.poster-image {
+  max-width: 100%;
+}
+.movie-card {
+  margin-bottom: 50px;
+}
+.rating-slider {
+  width: 60%;
+}
 </style>
 

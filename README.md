@@ -7,13 +7,15 @@ Built using the Vue framework and Vuetify UI library.  Axios is used to request 
 The slider filter has a range of 0 - 10 in 0.5 step increments.  Any movies with a `vote_average` property of less than the min rating will be removed from the list using a v-if statement.
 
 ###The Genre filter:
-The data returned from the get request provides the genres in number format.  Using a map function the numbers are converted to their names and placed in an array.  Duplicates are removed from this array and a second array of true values is built matching the length of the unique genres array.
+The data returned from the get request provides the genres in number format.  Using a map function the numbers are converted to their names and placed in an array.  Duplicates are removed from this array and a second array of true show values is built matching the length of the unique genres array.
 
 The unique genres array and the true values array are combined into a object and data is set on creation.
 
-This object `filmGenres` has `filmGenres[0] = names` and `filmGenres[1] = true value` as all checkbox will be ticked on creation.
+This object `filmGenres` has `filmGenres[0] = names` and `filmGenres[1] = show value`.
 V-for is used to create the checkboxes on `filmGenres[0]` displaying only the genres that are present in the movies returned from the get request.
-The checkboxs are binded to `filmGenres[1]` with a initial value of true as all listed genres are listed if the have a `vote_average` rating >= 3. 
+The checkboxs are binded to `filmGenres[1]` with a initial value of true as all listed genres are listed if the have a `vote_average` rating >= 3.
+
+On change of the tickbox the genre is set to true/false in  `filmGenres[1]` and the removeGenre function is run.  If the value is false then all instances of the genre in the genre_ids array are removed and their positions are stored.  If the value is true then all instances of the genre are restored to their positions in genre_ids from the deletedGenres storage.
 
 
 
@@ -24,7 +26,7 @@ The page is responsive using flexbox.
 
 
 
-
+###Try the app:
 [aws-url] : http://movie-listings.s3-website-us-east-1.amazonaws.com/;
 
 ## Project setup
